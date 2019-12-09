@@ -25,6 +25,6 @@ class Question extends Model
     }
 
     public function getPathAttribute() {
-      return "/questions/{$this->slug}";
+      return "/forum/{$this->slug}";
     }
 }

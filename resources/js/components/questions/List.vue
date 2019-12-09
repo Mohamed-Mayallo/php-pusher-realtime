@@ -1,29 +1,46 @@
 <template>
   <v-container>
-    <single v-for="question in questions" :key="question.id" :question="question"></single>
+    <template v-if="loading">
+      <v-card v-for="n in 10" :key="n" style="margin-bottom:10px">
+        <v-skeleton-loader
+          ref="skeleton"
+          boilerplate
+          type="article"
+          :tile="false"
+          transition="scale-transition"
+          class="mx-auto"
+        ></v-skeleton-loader>
+      </v-card>
+    </template>
+
+    <list-item v-else v-for="question in questions" :key="question.id" :question="question"></list-item>
   </v-container>
 </template>
 
 <script>
-import Single from "./Single";
+import ListItem from "./ListItem";
 
 export default {
   components: {
-    Single
+    ListItem
   },
   data() {
     return {
-      questions: []
+      questions: [],
+      loading: false
     };
   },
   async created() {
     try {
+      this.loading = true;
       let { data } = await axios.get("/api/questions");
       if (data.data) {
         this.questions = data.data;
       }
     } catch (e) {
       console.log(e);
+    } finally {
+      this.loading = false;
     }
   }
 };
