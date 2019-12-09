@@ -9,9 +9,13 @@
         <v-btn text>Forum</v-btn>
         <v-btn text>Ask a question</v-btn>
         <v-btn text>Contact</v-btn>
-        <router-link to="/login">
+        <router-link v-if="!isLogged" to="/login">
           <v-btn text>Login</v-btn>
         </router-link>
+        <router-link v-if="!isLogged" to="/signup">
+          <v-btn text>Signup</v-btn>
+        </router-link>
+        <v-btn v-if="isLogged" text @click="logout">Logout</v-btn>
       </div>
     </v-toolbar>
   </div>
@@ -19,6 +23,17 @@
 
 <script>
 export default {
-  name: "Toolbar"
+  name: "Toolbar",
+  mounted() {
+    $bus.$on("loggedIn", () => {
+      this.isLogged = true;
+    });
+  },
+  methods: {
+    logout() {
+      localStorage.removeItem("token");
+      this.isLogged = false;
+    }
+  }
 };
 </script>

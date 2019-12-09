@@ -18,6 +18,11 @@ export default {
       password: null
     };
   },
+  created() {
+    if (localStorage && localStorage.getItem("token")) {
+      this.$router.push("/");
+    }
+  },
   methods: {
     async login() {
       try {
@@ -25,10 +30,16 @@ export default {
           email: this.email,
           password: this.password
         });
+        if (data.access_token) {
+          localStorage.setItem("token", data.access_token);
+          this.isLogged = true;
+          $bus.$emit("loggedIn");
+          this.$router.push("/");
+        }
       } catch (e) {
         console.log(e);
       }
     }
   }
 };
-</script>script
+</script>
