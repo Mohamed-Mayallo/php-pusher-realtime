@@ -6,7 +6,9 @@
       <v-spacer></v-spacer>
 
       <div>
-        <v-btn text>Forum</v-btn>
+        <router-link v-if="isLogged" to="/forum">
+          <v-btn text>Forum</v-btn>
+        </router-link>
         <v-btn text>Ask a question</v-btn>
         <v-btn text>Contact</v-btn>
         <router-link v-if="!isLogged" to="/login">
