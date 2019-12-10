@@ -19,6 +19,12 @@
       <v-card-text>
         <div class="text--primary">{{ question.body }}</div>
       </v-card-text>
+      <v-card-actions v-if="user && question.user_id === user.id">
+        <v-btn text color="warning" @click="deleteQuestion">Delete</v-btn>
+        <router-link :to="`/forum/edit/${question.slug}`">
+          <v-btn text olor="primary">Edit</v-btn>
+        </router-link>
+      </v-card-actions>
     </v-card>
   </v-container>
 </template>
@@ -29,10 +35,13 @@ export default {
   data() {
     return {
       question: {},
-      loading: false
+      loading: false,
+      user: null
     };
   },
   async created() {
+    let { data: currentUser } = await axios.post("/api/auth/me");
+    this.user = currentUser;
     try {
       this.loading = true;
       let { data } = await axios.get(
@@ -45,6 +54,16 @@ export default {
       console.log(e);
     } finally {
       this.loading = false;
+    }
+  },
+  methods: {
+    async deleteQuestion() {
+      try {
+        await axios.delete(`/api/questions/${this.question.slug}`);
+        this.$router.push("/forum");
+      } catch (e) {
+        console.log(e);
+      }
     }
   }
 };
