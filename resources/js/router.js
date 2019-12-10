@@ -7,11 +7,13 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import List from './components/questions/List';
 import Single from './components/questions/Single';
+import Ask from './components/questions/Ask';
 
 const routes = [
     { path: '/login', component: Login },
     { path: '/signup', component: Signup },
     { path: '/forum', component: List },
+    { path: '/forum/ask', component: Ask },
     { path: '/forum/:slug', component: Single }
 ];
 

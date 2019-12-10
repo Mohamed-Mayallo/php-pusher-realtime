@@ -1,7 +1,9 @@
 <template>
   <div>
     <v-toolbar>
-      <v-toolbar-title>PHP-Pusher</v-toolbar-title>
+      <router-link to="/">
+        <v-toolbar-title>PHP-Pusher</v-toolbar-title>
+      </router-link>
 
       <v-spacer></v-spacer>
 
@@ -9,7 +11,9 @@
         <router-link v-if="isLogged" to="/forum">
           <v-btn text>Forum</v-btn>
         </router-link>
-        <v-btn text>Ask a question</v-btn>
+        <router-link v-if="isLogged" to="/forum/ask">
+          <v-btn text>Ask a question</v-btn>
+        </router-link>
         <v-btn text>Contact</v-btn>
         <router-link v-if="!isLogged" to="/login">
           <v-btn text>Login</v-btn>
@@ -35,6 +39,7 @@ export default {
     logout() {
       localStorage.removeItem("token");
       this.isLogged = false;
+      this.$router.push("/login");
     }
   }
 };

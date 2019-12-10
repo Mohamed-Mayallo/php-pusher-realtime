@@ -3,12 +3,9 @@
     <template v-if="loading">
       <v-card v-for="n in 10" :key="n" style="margin-bottom:10px">
         <v-skeleton-loader
-          ref="skeleton"
           boilerplate
           type="article"
           :tile="false"
-          transition="scale-transition"
-          class="mx-auto"
         ></v-skeleton-loader>
       </v-card>
     </template>
