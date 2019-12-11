@@ -40,10 +40,10 @@ export default {
     };
   },
   async created() {
+    try {
+    this.loading = true;
     let { data: currentUser } = await axios.post("/api/auth/me");
     this.user = currentUser;
-    try {
-      this.loading = true;
       let { data } = await axios.get(
         `/api/questions/${this.$route.params.slug}`
       );

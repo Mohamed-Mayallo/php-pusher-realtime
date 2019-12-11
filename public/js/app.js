@@ -2312,19 +2312,29 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: "AskAQuestion",
+  name: "UpdateAQuestion",
   data: function data() {
     return {
-      title: null,
-      body: null,
-      category_id: null,
+      question: {},
       errors: {},
-      categories: []
+      categories: [],
+      questionCategory: {},
+      loading: false
     };
   },
   created: function created() {
-    var _ref, data;
+    var _ref, data, _ref2, q;
 
     return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function created$(_context) {
       while (1) {
@@ -2334,10 +2344,12 @@ __webpack_require__.r(__webpack_exports__);
               this.$router.push("/");
             }
 
-            _context.next = 3;
+            _context.prev = 1;
+            this.loading = true;
+            _context.next = 5;
             return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.get("/api/categories"));
 
-          case 3:
+          case 5:
             _ref = _context.sent;
             data = _ref.data;
 
@@ -2345,35 +2357,60 @@ __webpack_require__.r(__webpack_exports__);
               this.categories = data.data;
             }
 
-          case 6:
+            _context.next = 10;
+            return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.get("/api/questions/".concat(this.$route.params.slug)));
+
+          case 10:
+            _ref2 = _context.sent;
+            q = _ref2.data;
+
+            if (q.data) {
+              this.question = q.data;
+              this.questionCategory = this.question.category;
+            }
+
+            _context.next = 18;
+            break;
+
+          case 15:
+            _context.prev = 15;
+            _context.t0 = _context["catch"](1);
+            console.log(_context.t0);
+
+          case 18:
+            _context.prev = 18;
+            this.loading = false;
+            return _context.finish(18);
+
+          case 21:
           case "end":
             return _context.stop();
         }
       }
-    }, null, this);
+    }, null, this, [[1, 15, 18, 21]]);
   },
   methods: {
     setCategory: function setCategory(item) {
-      this.category_id = item.id;
+      this.question.category_id = item.id;
     },
-    ask: function ask() {
-      var _ref2, data;
+    update: function update() {
+      var _ref3, data;
 
-      return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function ask$(_context2) {
+      return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function update$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
               _context2.prev = 0;
               _context2.next = 3;
-              return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.post("/api/questions", {
-                title: this.title,
-                category_id: this.category_id,
-                body: this.body
+              return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.patch("/api/questions/".concat(this.$route.params.slug), {
+                title: this.question.title,
+                category_id: this.question.category_id,
+                body: this.question.body
               }));
 
             case 3:
-              _ref2 = _context2.sent;
-              data = _ref2.data;
+              _ref3 = _context2.sent;
+              data = _ref3.data;
               this.$router.push("/forum");
               _context2.next = 11;
               break;
@@ -2581,15 +2618,15 @@ __webpack_require__.r(__webpack_exports__);
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.next = 2;
+            _context.prev = 0;
+            this.loading = true;
+            _context.next = 4;
             return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.post("/api/auth/me"));
 
-          case 2:
+          case 4:
             _ref = _context.sent;
             currentUser = _ref.data;
             this.user = currentUser;
-            _context.prev = 5;
-            this.loading = true;
             _context.next = 9;
             return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.get("/api/questions/".concat(this.$route.params.slug)));
 
@@ -2606,7 +2643,7 @@ __webpack_require__.r(__webpack_exports__);
 
           case 14:
             _context.prev = 14;
-            _context.t0 = _context["catch"](5);
+            _context.t0 = _context["catch"](0);
             console.log(_context.t0);
 
           case 17:
@@ -2619,7 +2656,7 @@ __webpack_require__.r(__webpack_exports__);
             return _context.stop();
         }
       }
-    }, null, this, [[5, 14, 17, 20]]);
+    }, null, this, [[0, 14, 17, 20]]);
   },
   methods: {
     deleteQuestion: function deleteQuestion() {
@@ -21420,81 +21457,97 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("v-container", [
-    _c(
-      "form",
-      {
-        on: {
-          submit: function($event) {
-            $event.preventDefault()
-            return _vm.ask($event)
-          }
-        }
-      },
-      [
-        _c("v-text-field", {
-          attrs: { label: "Title", type: "text" },
-          model: {
-            value: _vm.title,
-            callback: function($$v) {
-              _vm.title = $$v
+  return _c(
+    "v-container",
+    [
+      _vm.loading
+        ? _c("v-skeleton-loader", {
+            ref: "skeleton",
+            staticClass: "mx-auto",
+            attrs: {
+              boilerplate: "",
+              type: "article",
+              tile: false,
+              transition: "scale-transition"
+            }
+          })
+        : _c(
+            "form",
+            {
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  return _vm.update($event)
+                }
+              }
             },
-            expression: "title"
-          }
-        }),
-        _vm._v(" "),
-        _vm.errors.title
-          ? _c("span", { staticClass: "red--text" }, [
-              _vm._v(_vm._s(_vm.errors.title[0]))
-            ])
-          : _vm._e(),
-        _vm._v(" "),
-        _c("v-text-field", {
-          attrs: { label: "Content", required: "", type: "textarea" },
-          model: {
-            value: _vm.body,
-            callback: function($$v) {
-              _vm.body = $$v
-            },
-            expression: "body"
-          }
-        }),
-        _vm._v(" "),
-        _vm.errors.body
-          ? _c("span", { staticClass: "red--text" }, [
-              _vm._v(_vm._s(_vm.errors.body[0]))
-            ])
-          : _vm._e(),
-        _vm._v(" "),
-        _c("v-combobox", {
-          attrs: {
-            type: "object",
-            "item-text": "name",
-            items: _vm.categories,
-            label: "Select the question category"
-          },
-          on: { change: _vm.setCategory }
-        }),
-        _vm._v(" "),
-        _vm.errors.body
-          ? _c("span", { staticClass: "red--text" }, [
-              _vm._v(_vm._s(_vm.errors.body[0]))
-            ])
-          : _vm._e(),
-        _vm._v(" "),
-        _vm.errors.category_id
-          ? _c("span", { staticClass: "red--text" }, [
-              _vm._v(_vm._s(_vm.errors.category_id[0]))
-            ])
-          : _vm._e(),
-        _vm._v(" "),
-        _c("v-btn", { staticClass: "mr-4", attrs: { type: "submit" } }, [
-          _vm._v("Ask")
-        ])
-      ],
-      1
-    )
-  ])
+            [
+              _c("v-text-field", {
+                attrs: { label: "Title", type: "text" },
+                model: {
+                  value: _vm.question.title,
+                  callback: function($$v) {
+                    _vm.$set(_vm.question, "title", $$v)
+                  },
+                  expression: "question.title"
+                }
+              }),
+              _vm._v(" "),
+              _vm.errors.title
+                ? _c("span", { staticClass: "red--text" }, [
+                    _vm._v(_vm._s(_vm.errors.title[0]))
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _c("v-text-field", {
+                attrs: { label: "Content", required: "", type: "textarea" },
+                model: {
+                  value: _vm.question.body,
+                  callback: function($$v) {
+                    _vm.$set(_vm.question, "body", $$v)
+                  },
+                  expression: "question.body"
+                }
+              }),
+              _vm._v(" "),
+              _vm.errors.body
+                ? _c("span", { staticClass: "red--text" }, [
+                    _vm._v(_vm._s(_vm.errors.body[0]))
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _c("v-combobox", {
+                attrs: {
+                  type: "object",
+                  "item-text": "name",
+                  value: _vm.questionCategory.name,
+                  items: _vm.categories,
+                  label: "Select the question category"
+                },
+                on: { change: _vm.setCategory }
+              }),
+              _vm._v(" "),
+              _vm.errors.body
+                ? _c("span", { staticClass: "red--text" }, [
+                    _vm._v(_vm._s(_vm.errors.body[0]))
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.errors.category_id
+                ? _c("span", { staticClass: "red--text" }, [
+                    _vm._v(_vm._s(_vm.errors.category_id[0]))
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _c("v-btn", { staticClass: "mr-4", attrs: { type: "submit" } }, [
+                _vm._v("Update")
+              ])
+            ],
+            1
+          )
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -75214,7 +75267,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_questions_List__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/questions/List */ "./resources/js/components/questions/List.vue");
 /* harmony import */ var _components_questions_Single__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/questions/Single */ "./resources/js/components/questions/Single.vue");
 /* harmony import */ var _components_questions_Ask__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/questions/Ask */ "./resources/js/components/questions/Ask.vue");
-/* harmony import */ var _components_questions_Edit__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/questions/Edit */ "./resources/js/components/questions/Edit.vue");
+/* harmony import */ var _components_questions_Edit__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/questions/Edit */ "./resources/js/components/questions/Edit.vue");
 
 
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]);
@@ -75241,7 +75294,7 @@ var routes = [{
   component: _components_questions_Single__WEBPACK_IMPORTED_MODULE_5__["default"]
 }, {
   path: '/forum/edit/:slug',
-  component: _components_questions_Edit__WEBPACK_IMPORTED_MODULE_8__["default"]
+  component: _components_questions_Edit__WEBPACK_IMPORTED_MODULE_7__["default"]
 }];
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   routes: routes,
