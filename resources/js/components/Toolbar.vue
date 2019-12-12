@@ -14,7 +14,9 @@
         <router-link v-if="isLogged" to="/forum/ask">
           <v-btn text>Ask a question</v-btn>
         </router-link>
-        <v-btn text>Contact</v-btn>
+        <router-link v-if="isLogged" to="/categories/">
+          <v-btn text>Categories</v-btn>
+        </router-link>
         <router-link v-if="!isLogged" to="/login">
           <v-btn text>Login</v-btn>
         </router-link>
@@ -34,6 +36,15 @@ export default {
     $bus.$on("loggedIn", () => {
       this.isLogged = true;
     });
+  },
+  data() {
+    return {
+      user: null
+    };
+  },
+  async created() {
+    let { data: currentUser } = await axios.post("/api/auth/me");
+    this.user = currentUser;
   },
   methods: {
     logout() {

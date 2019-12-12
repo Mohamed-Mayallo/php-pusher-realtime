@@ -9,6 +9,7 @@ import List from './components/questions/List';
 import Single from './components/questions/Single';
 import Ask from './components/questions/Ask';
 import EditQuestion from './components/questions/Edit';
+import CategoriesList from './components/categories/List';
 
 const routes = [
     { path: '/login', component: Login },
@@ -16,7 +17,8 @@ const routes = [
     { path: '/forum', component: List },
     { path: '/forum/ask', component: Ask },
     { path: '/forum/:slug', component: Single },
-    { path: '/forum/edit/:slug', component: EditQuestion }
+    { path: '/forum/edit/:slug', component: EditQuestion },
+    { path: '/categories/', component: CategoriesList }
 ];
 
 const router = new VueRouter({
