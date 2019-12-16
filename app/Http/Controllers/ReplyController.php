@@ -42,6 +42,7 @@ class ReplyController extends Controller
      */
     public function store(Question $question, Request $request)
     {
+        request()->validate(['body' => 'required']);
         $reply = $question->replies()->create($request->all());
         return new ReplyResource($reply);
     }

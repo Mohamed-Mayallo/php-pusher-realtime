@@ -14,8 +14,6 @@
         :items="categories"
         label="Select the question category"
       ></v-combobox>
-      <span class="red--text" v-if="errors.body">{{ errors.body[0] }}</span>
-
       <span class="red--text" v-if="errors.category_id">{{ errors.category_id[0] }}</span>
 
       <v-btn class="mr-4" type="submit">Ask</v-btn>

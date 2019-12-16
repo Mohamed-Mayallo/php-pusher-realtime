@@ -17,6 +17,7 @@ class ReplyResource extends JsonResource
         return [
           'body' => $this->body,
           'user' => $this->user->name,
+          'question_slug' => $this->question->slug,
           'id' => $this->id,
           'created_at' => $this->created_at->diffForHumans(),
         ];
