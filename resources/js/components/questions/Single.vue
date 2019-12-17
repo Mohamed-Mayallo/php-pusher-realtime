@@ -34,7 +34,13 @@
             <v-skeleton-loader boilerplate type="article" :tile="false"></v-skeleton-loader>
           </v-card>
         </template>
-        <list-item v-else v-for="reply in question.replies" :key="reply.id" :question="reply"></list-item>
+        <list-item
+          v-else
+          v-for="reply in question.replies"
+          :key="reply.id"
+          :currentUser="user"
+          :question="reply"
+        ></list-item>
       </v-container>
     </template>
 

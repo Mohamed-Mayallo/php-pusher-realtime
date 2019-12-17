@@ -27,8 +27,22 @@
         <div class="text--primary">{{ question.body }}</div>
       </v-card-text>
       <v-card-actions>
-        <v-btn text color="warning" @click="deleteReply">Delete</v-btn>
-        <v-btn text color="primary" @click.stop="dialog=true">Edit</v-btn>
+        <v-btn
+          v-if="currentUser && currentUser.id === question.user_id"
+          text
+          color="warning"
+          @click="deleteReply"
+        >Delete</v-btn>
+        <v-btn
+          v-if="currentUser && currentUser.id === question.user_id"
+          text
+          color="primary"
+          @click.stop="dialog=true"
+        >Edit</v-btn>
+        <v-btn @click.prevent="like" icon>
+          <v-icon :color="question.is_liked ? 'red' : 'grey'">mdi-heart</v-icon>
+          {{ question.likes_count }}
+        </v-btn>
       </v-card-actions>
     </v-card>
     <Dialog :dialog="dialog" :reply="question"></Dialog>
@@ -46,6 +60,10 @@ export default {
     question: {
       type: Object,
       default: () => ({})
+    },
+    currentUser: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -59,6 +77,18 @@ export default {
     });
   },
   methods: {
+    async like() {
+      let url = this.question.is_liked
+        ? `/api/replies/${this.question.id}/unlike`
+        : `/api/replies/${this.question.id}/like`;
+      let { data } = await axios[this.question.is_liked ? "delete" : "post"](
+        url
+      );
+      this.question.is_liked
+        ? this.question.likes_count--
+        : this.question.likes_count++;
+      this.question.is_liked = !this.question.is_liked;
+    },
     async deleteReply() {
       try {
         await axios.delete(

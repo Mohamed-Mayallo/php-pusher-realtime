@@ -2775,6 +2775,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -2783,11 +2785,12 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       questions: [],
-      loading: false
+      loading: false,
+      currentUser: null
     };
   },
   created: function created() {
-    var _ref, data;
+    var _ref, currentUser, _ref2, data;
 
     return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function created$(_context) {
       while (1) {
@@ -2796,35 +2799,42 @@ __webpack_require__.r(__webpack_exports__);
             _context.prev = 0;
             this.loading = true;
             _context.next = 4;
-            return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.get("/api/questions"));
+            return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.post("/api/auth/me"));
 
           case 4:
             _ref = _context.sent;
-            data = _ref.data;
+            currentUser = _ref.data;
+            this.currentUser = currentUser;
+            _context.next = 9;
+            return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.get("/api/questions"));
+
+          case 9:
+            _ref2 = _context.sent;
+            data = _ref2.data;
 
             if (data.data) {
               this.questions = data.data;
             }
 
-            _context.next = 12;
+            _context.next = 17;
             break;
 
-          case 9:
-            _context.prev = 9;
+          case 14:
+            _context.prev = 14;
             _context.t0 = _context["catch"](0);
             console.log(_context.t0);
 
-          case 12:
-            _context.prev = 12;
+          case 17:
+            _context.prev = 17;
             this.loading = false;
-            return _context.finish(12);
+            return _context.finish(17);
 
-          case 15:
+          case 20:
           case "end":
             return _context.stop();
         }
       }
-    }, null, this, [[0, 9, 12, 15]]);
+    }, null, this, [[0, 14, 17, 20]]);
   }
 });
 
@@ -2880,6 +2890,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
@@ -2891,6 +2915,10 @@ __webpack_require__.r(__webpack_exports__);
       "default": function _default() {
         return {};
       }
+    },
+    currentUser: {
+      type: Object,
+      required: true
     }
   },
   data: function data() {
@@ -2906,28 +2934,52 @@ __webpack_require__.r(__webpack_exports__);
     });
   },
   methods: {
-    deleteReply: function deleteReply() {
-      return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function deleteReply$(_context) {
+    like: function like() {
+      var url, _ref, data;
+
+      return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function like$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              _context.prev = 0;
+              url = this.question.is_liked ? "/api/replies/".concat(this.question.id, "/unlike") : "/api/replies/".concat(this.question.id, "/like");
               _context.next = 3;
+              return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios[this.question.is_liked ? "delete" : "post"](url));
+
+            case 3:
+              _ref = _context.sent;
+              data = _ref.data;
+              this.question.is_liked ? this.question.likes_count-- : this.question.likes_count++;
+              this.question.is_liked = !this.question.is_liked;
+
+            case 7:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, null, this);
+    },
+    deleteReply: function deleteReply() {
+      return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function deleteReply$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              _context2.prev = 0;
+              _context2.next = 3;
               return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios["delete"]("/api/questions/".concat(this.question.question_slug, "/replies/").concat(this.question.id)));
 
             case 3:
               $bus.$emit("replyDeleted", this.question.id);
-              _context.next = 9;
+              _context2.next = 9;
               break;
 
             case 6:
-              _context.prev = 6;
-              _context.t0 = _context["catch"](0);
-              console.log(_context.t0);
+              _context2.prev = 6;
+              _context2.t0 = _context2["catch"](0);
+              console.log(_context2.t0);
 
             case 9:
             case "end":
-              return _context.stop();
+              return _context2.stop();
           }
         }
       }, null, this, [[0, 6]]);
@@ -2950,6 +3002,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _ListItem__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ListItem */ "./resources/js/components/questions/ListItem.vue");
 
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -22443,7 +22501,7 @@ var render = function() {
         : _vm._l(_vm.questions, function(question) {
             return _c("list-item", {
               key: question.id,
-              attrs: { question: question }
+              attrs: { currentUser: _vm.currentUser, question: question }
             })
           })
     ],
@@ -22580,27 +22638,61 @@ var render = function() {
               _c(
                 "v-card-actions",
                 [
-                  _c(
-                    "v-btn",
-                    {
-                      attrs: { text: "", color: "warning" },
-                      on: { click: _vm.deleteReply }
-                    },
-                    [_vm._v("Delete")]
-                  ),
+                  _vm.currentUser && _vm.currentUser.id === _vm.question.user_id
+                    ? _c(
+                        "v-btn",
+                        {
+                          attrs: { text: "", color: "warning" },
+                          on: { click: _vm.deleteReply }
+                        },
+                        [_vm._v("Delete")]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.currentUser && _vm.currentUser.id === _vm.question.user_id
+                    ? _c(
+                        "v-btn",
+                        {
+                          attrs: { text: "", color: "primary" },
+                          on: {
+                            click: function($event) {
+                              $event.stopPropagation()
+                              _vm.dialog = true
+                            }
+                          }
+                        },
+                        [_vm._v("Edit")]
+                      )
+                    : _vm._e(),
                   _vm._v(" "),
                   _c(
                     "v-btn",
                     {
-                      attrs: { text: "", color: "primary" },
+                      attrs: { icon: "" },
                       on: {
                         click: function($event) {
-                          $event.stopPropagation()
-                          _vm.dialog = true
+                          $event.preventDefault()
+                          return _vm.like($event)
                         }
                       }
                     },
-                    [_vm._v("Edit")]
+                    [
+                      _c(
+                        "v-icon",
+                        {
+                          attrs: {
+                            color: _vm.question.is_liked ? "red" : "grey"
+                          }
+                        },
+                        [_vm._v("mdi-heart")]
+                      ),
+                      _vm._v(
+                        "\n        " +
+                          _vm._s(_vm.question.likes_count) +
+                          "\n      "
+                      )
+                    ],
+                    1
                   )
                 ],
                 1
@@ -22747,7 +22839,7 @@ var render = function() {
                   : _vm._l(_vm.question.replies, function(reply) {
                       return _c("list-item", {
                         key: reply.id,
-                        attrs: { question: reply }
+                        attrs: { currentUser: _vm.user, question: reply }
                       })
                     })
               ],
