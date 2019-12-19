@@ -108,6 +108,7 @@ export default {
           }
         );
         this.question.replies.unshift(data.data);
+        $bus.$emit("newReply");
         window.scrollTo(0, 0);
       } catch (e) {
         if (e.response && e.response.data.errors)

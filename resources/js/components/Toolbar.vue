@@ -8,6 +8,7 @@
       <v-spacer></v-spacer>
 
       <div>
+        <notifications v-if="isLogged"></notifications>
         <router-link v-if="isLogged" to="/forum">
           <v-btn text>Forum</v-btn>
         </router-link>
@@ -30,8 +31,12 @@
 </template>
 
 <script>
+import Notifications from "./Notifications";
 export default {
   name: "Toolbar",
+  components: {
+    Notifications
+  },
   mounted() {
     $bus.$on("loggedIn", () => {
       this.isLogged = true;

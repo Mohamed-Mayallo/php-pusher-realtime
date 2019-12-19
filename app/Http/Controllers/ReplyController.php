@@ -6,6 +6,7 @@ use App\Reply;
 use App\Question;
 use Illuminate\Http\Request;
 use App\Http\Resources\ReplyResource;
+use App\Notifications\NewReplyNotification;
 
 class ReplyController extends Controller
 {
@@ -44,6 +45,9 @@ class ReplyController extends Controller
     {
         request()->validate(['body' => 'required']);
         $reply = $question->replies()->create($request->all());
+        if ($reply->user_id !== auth()->id()) {
+          $question->user->notify(new NewReplyNotification($reply));
+        }
         return new ReplyResource($reply);
     }
 
