@@ -38,9 +38,20 @@ export default {
       this.$router.push("/");
     }
 
-    let { data } = await axios.get("/api/categories");
-    if (data.data) {
-      this.categories = data.data;
+    try {
+      let { data } = await axios.get("/api/categories");
+      if (data.data) {
+        this.categories = data.data;
+      }
+    } catch (e) {
+      if (
+        ["token_absent", "token_expired", "token_invalid"].includes(
+          e.response.data.error
+        )
+      ) {
+        this.logout();
+        return;
+      }
     }
   },
   methods: {

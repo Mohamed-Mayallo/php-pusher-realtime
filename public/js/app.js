@@ -2039,9 +2039,8 @@ __webpack_require__.r(__webpack_exports__);
 
               if (data.access_token) {
                 localStorage.setItem("token", data.access_token);
-                this.isLogged = true;
-                $bus.$emit("loggedIn");
-                this.$router.push("/");
+                localStorage.setItem("user", JSON.stringify(data.user));
+                window.location = "/forum";
               }
 
               _context.next = 11;
@@ -2121,27 +2120,21 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     var _this = this;
 
-    var _ref, currentUser;
-
+    var currentUser;
     return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function created$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.next = 2;
-            return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.post("/api/auth/me"));
-
-          case 2:
-            _ref = _context2.sent;
-            currentUser = _ref.data;
+            currentUser = JSON.parse(localStorage.getItem("user"));
             Echo["private"]("App.User." + currentUser.id).notification(function (notification) {
               _this.unreadNotifications.unshift(notification);
 
               _this.unreadNotificationCount++;
             });
-            _context2.next = 7;
+            _context2.next = 4;
             return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(this.loadNotifications());
 
-          case 7:
+          case 4:
             $bus.$on("newReply", function _callee() {
               return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function _callee$(_context) {
                 while (1) {
@@ -2158,7 +2151,7 @@ __webpack_require__.r(__webpack_exports__);
               });
             });
 
-          case 8:
+          case 5:
           case "end":
             return _context2.stop();
         }
@@ -2167,28 +2160,43 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     loadNotifications: function loadNotifications() {
-      var _ref2, data;
+      var _ref, data;
 
       return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function loadNotifications$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              _context3.next = 2;
+              _context3.prev = 0;
+              _context3.next = 3;
               return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.post("/api/notifications"));
 
-            case 2:
-              _ref2 = _context3.sent;
-              data = _ref2.data;
+            case 3:
+              _ref = _context3.sent;
+              data = _ref.data;
               this.readNotifications = data.readNotifications;
               this.unreadNotifications = data.unreadNotifications;
               this.unreadNotificationCount = data.unreadNotifications.length;
+              _context3.next = 15;
+              break;
 
-            case 7:
+            case 10:
+              _context3.prev = 10;
+              _context3.t0 = _context3["catch"](0);
+
+              if (!["token_absent", "token_expired", "token_invalid"].includes(_context3.t0.response.data.error)) {
+                _context3.next = 15;
+                break;
+              }
+
+              this.logout();
+              return _context3.abrupt("return");
+
+            case 15:
             case "end":
               return _context3.stop();
           }
         }
-      }, null, this);
+      }, null, this, [[0, 10]]);
     },
     markAsRead: function markAsRead(index) {
       var notification;
@@ -2268,7 +2276,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     if (localStorage && localStorage.getItem("token")) {
-      this.$router.push("/");
+      this.$router.push("/forum");
     }
   },
   methods: {
@@ -2294,8 +2302,7 @@ __webpack_require__.r(__webpack_exports__);
 
               if (data.access_token) {
                 localStorage.setItem("token", data.access_token);
-                this.isLogged = true;
-                $bus.$emit("loggedIn");
+                localStorage.setItem("user", data.user);
                 this.$router.push("/");
               }
 
@@ -2328,10 +2335,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator/index.js */ "./node_modules/@babel/runtime/regenerator/index.js");
-/* harmony import */ var _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Notifications__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Notifications */ "./resources/js/components/Notifications.vue");
-
+/* harmony import */ var _Notifications__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Notifications */ "./resources/js/components/Notifications.vue");
 //
 //
 //
@@ -2368,48 +2372,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Toolbar",
   components: {
-    Notifications: _Notifications__WEBPACK_IMPORTED_MODULE_1__["default"]
-  },
-  mounted: function mounted() {
-    var _this = this;
-
-    $bus.$on("loggedIn", function () {
-      _this.isLogged = true;
-    });
+    Notifications: _Notifications__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   data: function data() {
     return {
-      user: null
+      isLogged: false
     };
   },
   created: function created() {
-    var _ref, currentUser;
-
-    return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function created$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            _context.next = 2;
-            return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.post("/api/auth/me"));
-
-          case 2:
-            _ref = _context.sent;
-            currentUser = _ref.data;
-            this.user = currentUser;
-
-          case 5:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, null, this);
-  },
-  methods: {
-    logout: function logout() {
-      localStorage.removeItem("token");
-      this.isLogged = false;
-      this.$router.push("/login");
-    }
+    this.isLogged = !!localStorage.getItem("token");
   }
 });
 
@@ -2529,25 +2500,32 @@ __webpack_require__.r(__webpack_exports__);
               this.categories = data.data;
             }
 
-            _context.next = 12;
+            _context.next = 14;
             break;
 
           case 9:
             _context.prev = 9;
             _context.t0 = _context["catch"](0);
-            console.log(_context.t0);
 
-          case 12:
-            _context.prev = 12;
+            if (!["token_absent", "token_expired", "token_invalid"].includes(_context.t0.response.data.error)) {
+              _context.next = 14;
+              break;
+            }
+
+            this.logout();
+            return _context.abrupt("return");
+
+          case 14:
+            _context.prev = 14;
             this.loading = false;
-            return _context.finish(12);
+            return _context.finish(14);
 
-          case 15:
+          case 17:
           case "end":
             return _context.stop();
         }
       }
-    }, null, this, [[0, 9, 12, 15]]);
+    }, null, this, [[0, 9, 14, 17]]);
   },
   methods: {
     editItem: function editItem(item) {
@@ -2689,10 +2667,11 @@ __webpack_require__.r(__webpack_exports__);
               this.$router.push("/");
             }
 
-            _context.next = 3;
+            _context.prev = 1;
+            _context.next = 4;
             return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.get("/api/categories"));
 
-          case 3:
+          case 4:
             _ref = _context.sent;
             data = _ref.data;
 
@@ -2700,12 +2679,27 @@ __webpack_require__.r(__webpack_exports__);
               this.categories = data.data;
             }
 
-          case 6:
+            _context.next = 14;
+            break;
+
+          case 9:
+            _context.prev = 9;
+            _context.t0 = _context["catch"](1);
+
+            if (!["token_absent", "token_expired", "token_invalid"].includes(_context.t0.response.data.error)) {
+              _context.next = 14;
+              break;
+            }
+
+            this.logout();
+            return _context.abrupt("return");
+
+          case 14:
           case "end":
             return _context.stop();
         }
       }
-    }, null, this);
+    }, null, this, [[1, 9]]);
   },
   methods: {
     setCategory: function setCategory(item) {
@@ -2844,25 +2838,32 @@ __webpack_require__.r(__webpack_exports__);
               this.questionCategory = this.question.category;
             }
 
-            _context.next = 18;
+            _context.next = 20;
             break;
 
           case 15:
             _context.prev = 15;
             _context.t0 = _context["catch"](1);
-            console.log(_context.t0);
 
-          case 18:
-            _context.prev = 18;
+            if (!["token_absent", "token_expired", "token_invalid"].includes(_context.t0.response.data.error)) {
+              _context.next = 20;
+              break;
+            }
+
+            this.logout();
+            return _context.abrupt("return");
+
+          case 20:
+            _context.prev = 20;
             this.loading = false;
-            return _context.finish(18);
+            return _context.finish(20);
 
-          case 21:
+          case 23:
           case "end":
             return _context.stop();
         }
       }
-    }, null, this, [[1, 15, 18, 21]]);
+    }, null, this, [[1, 15, 20, 23]]);
   },
   methods: {
     setCategory: function setCategory(item) {
@@ -2951,7 +2952,7 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   created: function created() {
-    var _ref, currentUser, _ref2, data;
+    var _ref, data;
 
     return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function created$(_context) {
       while (1) {
@@ -2959,43 +2960,44 @@ __webpack_require__.r(__webpack_exports__);
           case 0:
             _context.prev = 0;
             this.loading = true;
-            _context.next = 4;
-            return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.post("/api/auth/me"));
-
-          case 4:
-            _ref = _context.sent;
-            currentUser = _ref.data;
-            this.currentUser = currentUser;
-            _context.next = 9;
+            this.currentUser = JSON.parse(localStorage.getItem("user"));
+            _context.next = 5;
             return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.get("/api/questions"));
 
-          case 9:
-            _ref2 = _context.sent;
-            data = _ref2.data;
+          case 5:
+            _ref = _context.sent;
+            data = _ref.data;
 
             if (data.data) {
               this.questions = data.data;
             }
 
-            _context.next = 17;
+            _context.next = 15;
             break;
 
-          case 14:
-            _context.prev = 14;
+          case 10:
+            _context.prev = 10;
             _context.t0 = _context["catch"](0);
-            console.log(_context.t0);
 
-          case 17:
-            _context.prev = 17;
+            if (!["token_absent", "token_expired", "token_invalid"].includes(_context.t0.response.data.error)) {
+              _context.next = 15;
+              break;
+            }
+
+            this.logout();
+            return _context.abrupt("return");
+
+          case 15:
+            _context.prev = 15;
             this.loading = false;
-            return _context.finish(17);
+            return _context.finish(15);
 
-          case 20:
+          case 18:
           case "end":
             return _context.stop();
         }
       }
-    }, null, this, [[0, 14, 17, 20]]);
+    }, null, this, [[0, 10, 15, 18]]);
   }
 });
 
@@ -3251,7 +3253,7 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     var _this = this;
 
-    var _ref, currentUser, _ref2, data;
+    var _ref, data;
 
     return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function created$(_context) {
       while (1) {
@@ -3259,46 +3261,47 @@ __webpack_require__.r(__webpack_exports__);
           case 0:
             _context.prev = 0;
             this.loading = true;
-            _context.next = 4;
-            return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.post("/api/auth/me"));
-
-          case 4:
-            _ref = _context.sent;
-            currentUser = _ref.data;
-            this.user = currentUser;
-            Echo["private"]("App.User." + currentUser.id).notification(function (notification) {
+            this.user = JSON.parse(localStorage.getItem("user"));
+            Echo["private"]("App.User." + this.user.id).notification(function (notification) {
               _this.question.replies.unshift(notification.reply);
             });
-            _context.next = 10;
+            _context.next = 6;
             return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.get("/api/questions/".concat(this.$route.params.slug)));
 
-          case 10:
-            _ref2 = _context.sent;
-            data = _ref2.data;
+          case 6:
+            _ref = _context.sent;
+            data = _ref.data;
 
             if (data.data) {
               this.question = data.data;
             }
 
-            _context.next = 18;
+            _context.next = 16;
             break;
 
-          case 15:
-            _context.prev = 15;
+          case 11:
+            _context.prev = 11;
             _context.t0 = _context["catch"](0);
-            console.log(_context.t0);
 
-          case 18:
-            _context.prev = 18;
+            if (!["token_absent", "token_expired", "token_invalid"].includes(_context.t0.response.data.error)) {
+              _context.next = 16;
+              break;
+            }
+
+            this.logout();
+            return _context.abrupt("return");
+
+          case 16:
+            _context.prev = 16;
             this.loading = false;
-            return _context.finish(18);
+            return _context.finish(16);
 
-          case 21:
+          case 19:
           case "end":
             return _context.stop();
         }
       }
-    }, null, this, [[0, 15, 18, 21]]);
+    }, null, this, [[0, 11, 16, 19]]);
   },
   mounted: function mounted() {
     var _this2 = this;
@@ -3326,7 +3329,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     reply: function reply() {
-      var _ref3, data;
+      var _ref2, data;
 
       return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function reply$(_context3) {
         while (1) {
@@ -3339,8 +3342,8 @@ __webpack_require__.r(__webpack_exports__);
               }));
 
             case 3:
-              _ref3 = _context3.sent;
-              data = _ref3.data;
+              _ref2 = _context3.sent;
+              data = _ref2.data;
               this.question.replies.unshift(data.data);
               $bus.$emit("newReply");
               window.scrollTo(0, 0);
@@ -85731,8 +85734,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./router */ "./resources/js/router.js");
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
-window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 
+window.Vue = vue__WEBPACK_IMPORTED_MODULE_0___default.a;
 
 var vuetifyOptions = {};
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuetify__WEBPACK_IMPORTED_MODULE_1___default.a);
@@ -85740,16 +85743,15 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('Home', __webpack_require__
 
 window.$bus = new vue__WEBPACK_IMPORTED_MODULE_0___default.a();
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.mixin({
-  data: function data() {
-    return {
-      isLogged: false
-    };
-  },
-  created: function created() {
-    if (localStorage && localStorage.getItem('token')) this.isLogged = true;else this.isLogged = false;
+  methods: {
+    logout: function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      this.$router.push('/login');
+    }
   }
 });
-var app = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
+new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
   el: '#app',
   vuetify: new vuetify__WEBPACK_IMPORTED_MODULE_1___default.a(vuetifyOptions),
   router: _router__WEBPACK_IMPORTED_MODULE_2__["default"]
@@ -86741,6 +86743,9 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
 
 
 var routes = [{
+  path: '/',
+  component: _components_questions_List__WEBPACK_IMPORTED_MODULE_4__["default"]
+}, {
   path: '/login',
   component: _components_Login__WEBPACK_IMPORTED_MODULE_2__["default"]
 }, {

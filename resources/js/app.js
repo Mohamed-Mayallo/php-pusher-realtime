@@ -1,8 +1,8 @@
 require('./bootstrap');
 
-window.Vue = require('vue');
-
 import Vue from 'vue';
+window.Vue = Vue;
+
 import Vuetify from 'vuetify';
 const vuetifyOptions = {};
 Vue.use(Vuetify);
@@ -13,18 +13,16 @@ import router from './router';
 window.$bus = new Vue();
 
 Vue.mixin({
-    data() {
-        return {
-            isLogged: false
-        };
-    },
-    created() {
-        if (localStorage && localStorage.getItem('token')) this.isLogged = true;
-        else this.isLogged = false;
+    methods: {
+        logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            this.$router.push('/login');
+        }
     }
 });
 
-const app = new Vue({
+new Vue({
     el: '#app',
     vuetify: new Vuetify(vuetifyOptions),
     router

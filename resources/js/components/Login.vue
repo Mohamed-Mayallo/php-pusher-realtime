@@ -32,9 +32,8 @@ export default {
         });
         if (data.access_token) {
           localStorage.setItem("token", data.access_token);
-          this.isLogged = true;
-          $bus.$emit("loggedIn");
-          this.$router.push("/");
+          localStorage.setItem("user", JSON.stringify(data.user));
+          window.location = "/forum";
         }
       } catch (e) {
         console.log(e);

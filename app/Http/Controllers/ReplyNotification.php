@@ -7,6 +7,10 @@ use App\Http\Resources\ReplyNotificationResource;
 
 class ReplyNotification extends Controller
 {
+  public function __construct() {
+      $this->middleware('JWT');
+  }
+
     public function index() {
       return [
         'readNotifications' => ReplyNotificationResource::collection(auth()->user()->readNotifications()->get()),

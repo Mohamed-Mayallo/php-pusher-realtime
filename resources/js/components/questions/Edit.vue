@@ -65,7 +65,14 @@ export default {
         this.questionCategory = this.question.category;
       }
     } catch (e) {
-      console.log(e);
+      if (
+        ["token_absent", "token_expired", "token_invalid"].includes(
+          e.response.data.error
+        )
+      ) {
+        this.logout();
+        return;
+      }
     } finally {
       this.loading = false;
     }

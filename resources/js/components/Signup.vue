@@ -36,7 +36,7 @@ export default {
   },
   created() {
     if (localStorage && localStorage.getItem("token")) {
-      this.$router.push("/");
+      this.$router.push("/forum");
     }
   },
   methods: {
@@ -50,8 +50,7 @@ export default {
         });
         if (data.access_token) {
           localStorage.setItem("token", data.access_token);
-          this.isLogged = true;
-          $bus.$emit("loggedIn");
+          localStorage.setItem("user", data.user);
           this.$router.push("/");
         }
       } catch (e) {

@@ -12,6 +12,7 @@ import EditQuestion from './components/questions/Edit';
 import CategoriesList from './components/categories/List';
 
 const routes = [
+    { path: '/', component: List },
     { path: '/login', component: Login },
     { path: '/signup', component: Signup },
     { path: '/forum', component: List },

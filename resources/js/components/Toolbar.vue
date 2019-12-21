@@ -37,26 +37,13 @@ export default {
   components: {
     Notifications
   },
-  mounted() {
-    $bus.$on("loggedIn", () => {
-      this.isLogged = true;
-    });
-  },
   data() {
     return {
-      user: null
+      isLogged: false
     };
   },
-  async created() {
-    let { data: currentUser } = await axios.post("/api/auth/me");
-    this.user = currentUser;
-  },
-  methods: {
-    logout() {
-      localStorage.removeItem("token");
-      this.isLogged = false;
-      this.$router.push("/login");
-    }
+  created() {
+    this.isLogged = !!localStorage.getItem("token");
   }
 };
 </script>

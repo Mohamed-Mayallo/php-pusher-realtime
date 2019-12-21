@@ -42,7 +42,7 @@ export default {
     };
   },
   async created() {
-    let { data: currentUser } = await axios.post("/api/auth/me");
+    let currentUser = JSON.parse(localStorage.getItem("user"));
     Echo.private("App.User." + currentUser.id).notification(notification => {
       this.unreadNotifications.unshift(notification);
       this.unreadNotificationCount++;
@@ -56,10 +56,21 @@ export default {
   },
   methods: {
     async loadNotifications() {
-      let { data } = await axios.post("/api/notifications");
-      this.readNotifications = data.readNotifications;
-      this.unreadNotifications = data.unreadNotifications;
-      this.unreadNotificationCount = data.unreadNotifications.length;
+      try {
+        let { data } = await axios.post("/api/notifications");
+        this.readNotifications = data.readNotifications;
+        this.unreadNotifications = data.unreadNotifications;
+        this.unreadNotificationCount = data.unreadNotifications.length;
+      } catch (e) {
+        if (
+          ["token_absent", "token_expired", "token_invalid"].includes(
+            e.response.data.error
+          )
+        ) {
+          this.logout();
+          return;
+        }
+      }
     },
     async markAsRead(index) {
       let notification = this.unreadNotifications[index];

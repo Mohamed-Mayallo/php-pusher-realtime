@@ -74,9 +74,8 @@ export default {
   async created() {
     try {
       this.loading = true;
-      let { data: currentUser } = await axios.post("/api/auth/me");
-      this.user = currentUser;
-      Echo.private("App.User." + currentUser.id).notification(notification => {
+      this.user = JSON.parse(localStorage.getItem("user"));
+      Echo.private("App.User." + this.user.id).notification(notification => {
         this.question.replies.unshift(notification.reply);
       });
       let { data } = await axios.get(
@@ -86,7 +85,14 @@ export default {
         this.question = data.data;
       }
     } catch (e) {
-      console.log(e);
+      if (
+        ["token_absent", "token_expired", "token_invalid"].includes(
+          e.response.data.error
+        )
+      ) {
+        this.logout();
+        return;
+      }
     } finally {
       this.loading = false;
     }

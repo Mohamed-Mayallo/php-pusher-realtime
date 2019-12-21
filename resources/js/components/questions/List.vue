@@ -33,14 +33,20 @@ export default {
   async created() {
     try {
       this.loading = true;
-      let { data: currentUser } = await axios.post("/api/auth/me");
-      this.currentUser = currentUser;
+      this.currentUser = JSON.parse(localStorage.getItem("user"));
       let { data } = await axios.get("/api/questions");
       if (data.data) {
         this.questions = data.data;
       }
     } catch (e) {
-      console.log(e);
+      if (
+        ["token_absent", "token_expired", "token_invalid"].includes(
+          e.response.data.error
+        )
+      ) {
+        this.logout();
+        return;
+      }
     } finally {
       this.loading = false;
     }
