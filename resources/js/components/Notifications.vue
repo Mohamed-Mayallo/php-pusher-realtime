@@ -42,6 +42,12 @@ export default {
     };
   },
   async created() {
+    let { data: currentUser } = await axios.post("/api/auth/me");
+    Echo.private("App.User." + currentUser.id).notification(notification => {
+      this.unreadNotifications.unshift(notification);
+      this.unreadNotificationCount++;
+    });
+
     await this.loadNotifications();
 
     $bus.$on("newReply", async () => {

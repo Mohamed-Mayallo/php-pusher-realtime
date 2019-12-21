@@ -2121,14 +2121,27 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     var _this = this;
 
+    var _ref, currentUser;
+
     return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function created$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.next = 2;
-            return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(this.loadNotifications());
+            return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.post("/api/auth/me"));
 
           case 2:
+            _ref = _context2.sent;
+            currentUser = _ref.data;
+            Echo["private"]("App.User." + currentUser.id).notification(function (notification) {
+              _this.unreadNotifications.unshift(notification);
+
+              _this.unreadNotificationCount++;
+            });
+            _context2.next = 7;
+            return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(this.loadNotifications());
+
+          case 7:
             $bus.$on("newReply", function _callee() {
               return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function _callee$(_context) {
                 while (1) {
@@ -2145,7 +2158,7 @@ __webpack_require__.r(__webpack_exports__);
               });
             });
 
-          case 3:
+          case 8:
           case "end":
             return _context2.stop();
         }
@@ -2154,7 +2167,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     loadNotifications: function loadNotifications() {
-      var _ref, data;
+      var _ref2, data;
 
       return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function loadNotifications$(_context3) {
         while (1) {
@@ -2164,8 +2177,8 @@ __webpack_require__.r(__webpack_exports__);
               return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.post("/api/notifications"));
 
             case 2:
-              _ref = _context3.sent;
-              data = _ref.data;
+              _ref2 = _context3.sent;
+              data = _ref2.data;
               this.readNotifications = data.readNotifications;
               this.unreadNotifications = data.unreadNotifications;
               this.unreadNotificationCount = data.unreadNotifications.length;
@@ -3074,11 +3087,25 @@ __webpack_require__.r(__webpack_exports__);
       dialog: false
     };
   },
-  mounted: function mounted() {
+  created: function created() {
     var _this = this;
 
+    Echo.channel("likeChannel").listen("LikeEvent", function (e) {
+      if (_this.question.id === e.id) {
+        e.type === 1 ? _this.question.likes_count++ : _this.question.likes_count--;
+      }
+    });
+    Echo.channel("deleteReplyChannel").listen("DeleteReplyEvent", function (e) {
+      if (_this.question.id === e.id) {
+        $bus.$emit("replyDeleted", _this.question.id);
+      }
+    });
+  },
+  mounted: function mounted() {
+    var _this2 = this;
+
     $bus.$on("close", function () {
-      _this.dialog = false;
+      _this2.dialog = false;
     });
   },
   methods: {
@@ -3222,6 +3249,8 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   created: function created() {
+    var _this = this;
+
     var _ref, currentUser, _ref2, data;
 
     return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.async(function created$(_context) {
@@ -3237,10 +3266,13 @@ __webpack_require__.r(__webpack_exports__);
             _ref = _context.sent;
             currentUser = _ref.data;
             this.user = currentUser;
-            _context.next = 9;
+            Echo["private"]("App.User." + currentUser.id).notification(function (notification) {
+              _this.question.replies.unshift(notification.reply);
+            });
+            _context.next = 10;
             return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(axios.get("/api/questions/".concat(this.$route.params.slug)));
 
-          case 9:
+          case 10:
             _ref2 = _context.sent;
             data = _ref2.data;
 
@@ -3248,31 +3280,31 @@ __webpack_require__.r(__webpack_exports__);
               this.question = data.data;
             }
 
-            _context.next = 17;
+            _context.next = 18;
             break;
 
-          case 14:
-            _context.prev = 14;
+          case 15:
+            _context.prev = 15;
             _context.t0 = _context["catch"](0);
             console.log(_context.t0);
 
-          case 17:
-            _context.prev = 17;
+          case 18:
+            _context.prev = 18;
             this.loading = false;
-            return _context.finish(17);
+            return _context.finish(18);
 
-          case 20:
+          case 21:
           case "end":
             return _context.stop();
         }
       }
-    }, null, this, [[0, 14, 17, 20]]);
+    }, null, this, [[0, 15, 18, 21]]);
   },
   mounted: function mounted() {
-    var _this = this;
+    var _this2 = this;
 
     $bus.$on("replyDeleted", function (replyId) {
-      _this.question.replies = _this.question.replies.filter(function (r) {
+      _this2.question.replies = _this2.question.replies.filter(function (r) {
         return r.id !== replyId;
       });
     });
@@ -3282,7 +3314,7 @@ __webpack_require__.r(__webpack_exports__);
           switch (_context2.prev = _context2.next) {
             case 0:
               _context2.next = 2;
-              return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(_this.updateReply(reply));
+              return _babel_runtime_regenerator_index_js__WEBPACK_IMPORTED_MODULE_0___default.a.awrap(_this2.updateReply(reply));
 
             case 2:
             case "end":
@@ -85772,7 +85804,12 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: 'pusher',
   key: '4277eabe9602441a9f39',
   cluster: 'ap2',
-  encrypted: true
+  encrypted: true,
+  auth: {
+    headers: {
+      Authorization: "Bearer ".concat(jwtToken)
+    }
+  }
 });
 
 /***/ }),

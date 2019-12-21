@@ -76,6 +76,9 @@ export default {
       this.loading = true;
       let { data: currentUser } = await axios.post("/api/auth/me");
       this.user = currentUser;
+      Echo.private("App.User." + currentUser.id).notification(notification => {
+        this.question.replies.unshift(notification.reply);
+      });
       let { data } = await axios.get(
         `/api/questions/${this.$route.params.slug}`
       );

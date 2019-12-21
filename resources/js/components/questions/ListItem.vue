@@ -71,6 +71,21 @@ export default {
       dialog: false
     };
   },
+  created() {
+    Echo.channel("likeChannel").listen("LikeEvent", e => {
+      if (this.question.id === e.id) {
+        e.type === 1
+          ? this.question.likes_count++
+          : this.question.likes_count--;
+      }
+    });
+
+    Echo.channel("deleteReplyChannel").listen("DeleteReplyEvent", e => {
+      if (this.question.id === e.id) {
+        $bus.$emit("replyDeleted", this.question.id);
+      }
+    });
+  },
   mounted() {
     $bus.$on("close", () => {
       this.dialog = false;
